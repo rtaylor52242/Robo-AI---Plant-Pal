@@ -46,6 +46,14 @@ const XIcon = () => (
     </svg>
 );
 
+const HelpCircleIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+    <circle cx="12" cy="12" r="10" />
+    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+    <path d="M12 17h.01" />
+  </svg>
+);
+
 
 const ChatMessage: React.FC<{ message: Message }> = ({ message }) => {
   const isBot = message.author === Author.BOT;
@@ -71,6 +79,7 @@ const App: React.FC = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -161,9 +170,18 @@ const App: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-sans">
-      <header className="bg-white dark:bg-gray-900 shadow-md p-4 flex items-center gap-3">
-        <LeafIcon/>
-        <h1 className="text-xl font-bold">Robo AI - Plant Pal</h1>
+      <header className="bg-white dark:bg-gray-900 shadow-md p-4 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+            <LeafIcon/>
+            <h1 className="text-xl font-bold">Robo AI - Plant Pal</h1>
+        </div>
+        <button
+            onClick={() => setIsHelpModalOpen(true)}
+            className="p-2 text-gray-500 dark:text-gray-400 hover:text-primary transition-colors"
+            aria-label="Help"
+        >
+            <HelpCircleIcon />
+        </button>
       </header>
       
       <main className="flex-1 overflow-y-auto p-4 space-y-6">
@@ -218,6 +236,56 @@ const App: React.FC = () => {
           </div>
         </div>
       </footer>
+
+      {isHelpModalOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4"
+          onClick={() => setIsHelpModalOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="help-modal-title"
+        >
+          <div
+            className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 m-4 max-w-md w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h2 id="help-modal-title" className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                How to Use Plant Pal
+              </h2>
+              <button
+                onClick={() => setIsHelpModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                aria-label="Close help"
+              >
+                <XIcon />
+              </button>
+            </div>
+            <div className="space-y-4 text-gray-700 dark:text-gray-300">
+              <p>
+                Welcome! Here's how to get started:
+              </p>
+              <ol className="list-decimal list-inside space-y-2">
+                <li>
+                  <strong>Identify a Plant:</strong> Click the paperclip icon to upload a photo of your plant.
+                </li>
+                <li>
+                  <strong>Get Info:</strong> You can add a question or just send the image. We'll identify it and provide detailed care instructions.
+                </li>
+                <li>
+                  <strong>Ask Anything:</strong> Chat with the AI to ask any follow-up questions about your plant's health, watering schedule, etc.
+                </li>
+              </ol>
+            </div>
+            <button
+              onClick={() => setIsHelpModalOpen(false)}
+              className="mt-6 w-full bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-primary-dark transition-colors"
+            >
+              Got it!
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
